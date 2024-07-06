@@ -1,0 +1,187 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+@using Radzen
+@using Radzen.Blazor
+
+
+<RadzenDataGrid AllowFiltering="true" AllowColumnResize="true" AllowAlternatingRows="false" FilterMode="FilterMode.Advanced" AllowSorting="true" PageSize="5" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Left" ShowPagingSummary="true"
+                Data="@items" ColumnWidth="300px" LogicalFilterOperator="LogicalFilterOperator.Or" SelectionMode="DataGridSelectionMode.Single" >
+    <Columns>
+        <RadzenDataGridColumn TItem="YourDataModel" Property="Property2" Title="Property 2" />
+    </Columns>
+</RadzenDataGrid>
+
+
+
+<RadzenDataGrid  Data="@items" Count="@count" LoadData="@LoadData" AllowVirtualization="true" Style="height:400px"
+                AllowFiltering="true" FilterPopupRenderMode="PopupRenderMode.OnDemand" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" LogicalFilterOperator="LogicalFilterOperator.Or"
+                AllowSorting="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="YourDataModel" Property="Property1" Title="Property 1" />
+        <RadzenDataGridColumn TItem="YourDataModel" Property="Property2" Title="Property 2" />
+        <!-- Add more columns as needed -->
+    </Columns>
+</RadzenDataGrid>
+@* <RadzenButton Click=@(args => OnClick(true))>next</RadzenButton>
+<RadzenButton Click=@(args => OnClick(false))>back</RadzenButton> *@
+
+@code {
+    private IEnumerable<YourDataModel> items;
+    int skipValue = 0;
+    int topValue = 10;
+    string lastfilter;
+    int count;
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        await Task.Yield();
+
+        if (!string.IsNullOrEmpty(args.Filter) && lastfilter != args.Filter)
+        {
+            args.Skip = 0;
+        }
+
+
+        var query = GetAllData().AsQueryable();
+        count = await Task.FromResult(query.Count());
+
+
+        // if (!string.IsNullOrEmpty(args.OrderBy))
+        // {
+        //     query = query.OrderBy(args.OrderBy);
+        // }
+
+        items = await Task.FromResult(query.Skip(args.Skip.Value).Take(args.Top.Value).ToList());
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await FetchDataAsync(skipValue, topValue);
+        items = result.Items;
+    }
+
+    private async Task OnClick(bool isNext)
+    {
+        updateSkipTop(isNext);
+
+
+        LoadDataArgs args = new LoadDataArgs();
+        args.Skip = skipValue;
+        args.Top = topValue;
+        await LoadData(args);
+
+    }
+
+    private void updateSkipTop(bool isNext)
+    {
+        if (isNext)
+        {
+            skipValue += 5;
+        }
+        else
+        {
+            skipValue = Math.Max(0, skipValue - 5);
+        }
+    }
+
+    // private async Task LoadData(LoadDataArgs args)
+    // {
+    //     int skip = args.Skip ?? 0;
+    //     int top = args.Top ?? 5;
+
+    //     var result = await FetchDataAsync(skip, top);
+    //     items = result.Items;
+    // }
+
+    private async Task<(IEnumerable<YourDataModel> Items, int TotalCount)> FetchDataAsync(int skip, int top)
+    {
+        var allData = GetAllData();
+        var paginatedData = allData.Skip(skip).Take(top).ToList();
+        return (paginatedData, allData.Count());
+    }
+
+    private IList<YourDataModel> GetAllData()
+    {
+        return new List<YourDataModel>
+        {
+            new YourDataModel { Property1 = "Item 1", Property2 = "Description 1" },
+            new YourDataModel { Property1 = "Item 2", Property2 = "Description 2" },
+            new YourDataModel { Property1 = "Item 3", Property2 = "Description 3" },
+            new YourDataModel { Property1 = "Item 4", Property2 = "Description 4" },
+            new YourDataModel { Property1 = "Item 5", Property2 = "Description 5" },
+            new YourDataModel { Property1 = "Item 6", Property2 = "Description 6" },
+            new YourDataModel { Property1 = "Item 7", Property2 = "Description 7" },
+            new YourDataModel { Property1 = "Item 8", Property2 = "Description 8" },
+            new YourDataModel { Property1 = "Item 9", Property2 = "Description 9" },
+            new YourDataModel { Property1 = "Item 10", Property2 = "Description 10" },
+            new YourDataModel { Property1 = "Item 11", Property2 = "Description 11" },
+            new YourDataModel { Property1 = "Item 12", Property2 = "Description 12" },
+            new YourDataModel { Property1 = "Item 13", Property2 = "Description 13" },
+            new YourDataModel { Property1 = "Item 14", Property2 = "Description 14" },
+            new YourDataModel { Property1 = "Item 15", Property2 = "Description 15" },
+            new YourDataModel { Property1 = "Item 16", Property2 = "Description 16" },
+            new YourDataModel { Property1 = "Item 17", Property2 = "Description 17" },
+            new YourDataModel { Property1 = "Item 18", Property2 = "Description 18" },
+            new YourDataModel { Property1 = "Item 19", Property2 = "Description 19" },
+            new YourDataModel { Property1 = "Item 20", Property2 = "Description 20" },
+            new YourDataModel { Property1 = "Item 21", Property2 = "Description 21" },
+            new YourDataModel { Property1 = "Item 22", Property2 = "Description 22" },
+            new YourDataModel { Property1 = "Item 23", Property2 = "Description 23" },
+            new YourDataModel { Property1 = "Item 24", Property2 = "Description 24" },
+            new YourDataModel { Property1 = "Item 25", Property2 = "Description 25" },
+            new YourDataModel { Property1 = "Item 26", Property2 = "Description 26" },
+            new YourDataModel { Property1 = "Item 27", Property2 = "Description 27" },
+            new YourDataModel { Property1 = "Item 28", Property2 = "Description 28" },
+            new YourDataModel { Property1 = "Item 29", Property2 = "Description 29" },
+            new YourDataModel { Property1 = "Item 30", Property2 = "Description 30" },
+                   new YourDataModel { Property1 = "ITEM 1", Property2 = "TEST 1" },
+   new YourDataModel { Property1 = "ITEM 2", Property2 = "TEST 2" },
+   new YourDataModel { Property1 = "ITEM 3", Property2 = "TEST 3" },
+   new YourDataModel { Property1 = "ITEM 4", Property2 = "TEST 4" },
+   new YourDataModel { Property1 = "ITEM 5", Property2 = "TEST 5" },
+   new YourDataModel { Property1 = "ITEM 6", Property2 = "TEST 6" },
+   new YourDataModel { Property1 = "ITEM 7", Property2 = "TEST 7" },
+   new YourDataModel { Property1 = "ITEM 8", Property2 = "TEST 8" },
+   new YourDataModel { Property1 = "ITEM 9", Property2 = "TEST 9" },
+   new YourDataModel { Property1 = "ITEM 10", Property2 = "TEST 10" },
+   new YourDataModel { Property1 = "ITEM 11", Property2 = "TEST 11" },
+   new YourDataModel { Property1 = "ITEM 12", Property2 = "TEST 12" },
+   new YourDataModel { Property1 = "ITEM 13", Property2 = "TEST 13" },
+   new YourDataModel { Property1 = "ITEM 14", Property2 = "TEST 14" },
+   new YourDataModel { Property1 = "ITEM 15", Property2 = "TEST 15" },
+   new YourDataModel { Property1 = "ITEM 16", Property2 = "TEST 16" },
+   new YourDataModel { Property1 = "ITEM 17", Property2 = "TEST 17" },
+   new YourDataModel { Property1 = "ITEM 18", Property2 = "TEST 18" },
+   new YourDataModel { Property1 = "ITEM 19", Property2 = "TEST 19" },
+   new YourDataModel { Property1 = "ITEM 20", Property2 = "TEST 20" },
+          new YourDataModel { Property1 = "ITEM 1", Property2 = "TEST 1" },
+   new YourDataModel { Property1 = "ITEM 2", Property2 = "TEST 2" },
+   new YourDataModel { Property1 = "ITEM 3", Property2 = "TEST 3" },
+   new YourDataModel { Property1 = "ITEM 4", Property2 = "TEST 4" },
+   new YourDataModel { Property1 = "ITEM 5", Property2 = "TEST 5" },
+   new YourDataModel { Property1 = "ITEM 6", Property2 = "TEST 6" },
+   new YourDataModel { Property1 = "ITEM 7", Property2 = "TEST 7" },
+   new YourDataModel { Property1 = "ITEM 8", Property2 = "TEST 8" },
+   new YourDataModel { Property1 = "ITEM 9", Property2 = "TEST 9" },
+   new YourDataModel { Property1 = "ITEM 10", Property2 = "TEST 10" },
+   new YourDataModel { Property1 = "ITEM 11", Property2 = "TEST 11" },
+   new YourDataModel { Property1 = "ITEM 12", Property2 = "TEST 12" },
+   new YourDataModel { Property1 = "ITEM 13", Property2 = "TEST 13" },
+   new YourDataModel { Property1 = "ITEM 14", Property2 = "TEST 14" },
+   new YourDataModel { Property1 = "ITEM 15", Property2 = "TEST 15" },
+   new YourDataModel { Property1 = "ITEM 16", Property2 = "TEST 16" },
+   new YourDataModel { Property1 = "ITEM 17", Property2 = "TEST 17" },
+   new YourDataModel { Property1 = "ITEM 18", Property2 = "TEST 18" },
+   new YourDataModel { Property1 = "ITEM 19", Property2 = "TEST 19" },
+   new YourDataModel { Property1 = "ITEM 20", Property2 = "TEST 20" }
+            // Add more items as needed
+        };
+    }
+
+    public class YourDataModel
+    {
+        public string Property1 { get; set; }
+        public string Property2 { get; set; }
+    }
+}
